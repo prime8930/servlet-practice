@@ -43,7 +43,7 @@
 	<br><br>
 	<h1>하이퍼링크</h1>
 	<a href="form.jsp">폼으로가기</a>
-	<a href="index.jsp">메인으로 가기</a>
+	<a href="index.jsp?no=10">메인으로 가기</a>
 	
 	<br><br>
 	<h1>단락 나누기</h1>
