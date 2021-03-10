@@ -7,7 +7,7 @@
 	String lastName = request.getParameter("lastName");
 	String email = request.getParameter("email");
 	
-	if(firstName != "" || lastName != "" || email != "") {
+	if( !(firstName.equals("") || lastName.equals("") || email.equals("")) ) {
 	
 		EmaillistVo vo = new EmaillistVo();
 		

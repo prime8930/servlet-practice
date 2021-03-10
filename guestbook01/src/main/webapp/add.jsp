@@ -7,7 +7,7 @@
 	String password = request.getParameter("password");
 	String contents = request.getParameter("contents");
 	
-	if(name != "" || password != "" || contents != "") {
+	if( !(name.equals("") || password.equals("") || contents.equals("")) ) {
 	
 		GuestBookVo vo = new GuestBookVo();
 		
