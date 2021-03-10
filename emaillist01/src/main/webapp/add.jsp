@@ -7,16 +7,23 @@
 	String lastName = request.getParameter("lastName");
 	String email = request.getParameter("email");
 	
-	EmaillistVo vo = new EmaillistVo();
+	if(firstName != "" || lastName != "" || email != "") {
 	
-	vo.setFirstName(firstName);
-	vo.setLastName(lastName);
-	vo.setEmail(email);
+		EmaillistVo vo = new EmaillistVo();
+		
+		vo.setFirstName(firstName);
+		vo.setLastName(lastName);
+		vo.setEmail(email);
+		
+		new EmaillistDao().insert(vo);
+		
+		// insert 후 페이지에 머무르지 않고 바로 홈으로 리다이렉트된다.
+		response.sendRedirect("/emaillist01");
+	}
 	
-	new EmaillistDao().insert(vo);
+	response.sendRedirect("/emaillist01/form.jsp");
 	
-	// insert 후 페이지에 머무르지 않고 바로 홈으로 리다이렉트된다.
-	response.sendRedirect("/emaillist01");
+	
 %>
 <!DOCTYPE html>
 <html>
