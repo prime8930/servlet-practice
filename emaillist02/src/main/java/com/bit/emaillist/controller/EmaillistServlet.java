@@ -16,21 +16,43 @@ public class EmaillistServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8");
 		String action = request.getParameter("a");
 		
 		if("form".equals(action) ){
+			
 			WebUtil.forward("/WEB-INF/views/form.jsp", request, response);
+			
 		} else if("add".equals(action) ){
-			WebUtil.forward("/WEB-INF/views/add.jsp", request, response);
+			
+			String firstName = request.getParameter("firstName");
+			String lastName = request.getParameter("lastName");
+			String email = request.getParameter("email");
+			
+			if( !(firstName.equals("") || lastName.equals("") || email.equals("")) ) {
+			
+				EmaillistVo vo = new EmaillistVo();
+				
+				vo.setFirstName(firstName);
+				vo.setLastName(lastName);
+				vo.setEmail(email);
+				
+				new EmaillistDao().insert(vo);
+				
+			}
+			
+			WebUtil.redirect(request.getContextPath() +"/el", request, response);
+			
 		} else {
+			
 			List<EmaillistVo> list = new EmaillistDao().findAll();
 
 			// forwarding = request dispatch = request extension
 			request.setAttribute("list", list);
 			WebUtil.forward("/WEB-INF/views/index.jsp", request, response);
+			
 		}
 	}
-
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
