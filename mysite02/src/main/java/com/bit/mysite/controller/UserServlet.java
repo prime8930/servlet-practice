@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.bit.mysite.dao.UserDao;
 import com.bit.mysite.vo.UserVo;
@@ -43,7 +44,25 @@ public class UserServlet extends HttpServlet {
 			
 			// authentication
 			
+			HttpSession session = request.getSession(true); // 없으면 생성, false - 없으면 null 반환
+			session.setAttribute("authUser", authUser);
 			
+			// response
+			WebUtil.redirect(request.getContextPath(), request, response);
+			
+		} else if("logout".equals(action)) {
+			
+			HttpSession session = request.getSession();
+			
+			// logout process
+			if( session != null && session.getAttribute("authUser") != null) {
+				session.removeAttribute("authUser");
+				session.invalidate();
+			}
+			
+			WebUtil.redirect(request.getContextPath(), request, response);
+			
+		
 		} else if( "join".equals(action) ) {
 			String name = request.getParameter("name");
 			String email = request.getParameter("email");
