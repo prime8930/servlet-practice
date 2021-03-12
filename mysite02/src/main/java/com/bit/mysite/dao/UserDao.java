@@ -3,6 +3,7 @@ package com.bit.mysite.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.bit.mysite.vo.UserVo;
@@ -10,6 +11,57 @@ import com.bit.mysite.vo.UserVo;
 public class UserDao {
 	Connection conn = null;
 	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	
+	public UserVo findByMailAndPassword(UserVo vo) {
+		UserVo userVo = null;
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "select no, name from user where email = ? and password = ?;";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, vo.getEmail());
+			pstmt.setString(2, vo.getPassword());
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				long no = rs.getLong(1);
+				String name = rs.getString(2);
+				
+				userVo = new UserVo(no, name);
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return userVo;
+	}
 	
 	public boolean insert(UserVo vo) {
 		
