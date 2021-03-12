@@ -8,8 +8,9 @@ insert into emaillist values(null, '길동', '다', 'example3@exmaple.com');
 insert into emaillist values(null, '길동', '라', 'example4@exmaple.com');
 
 -- list
-select no, first_name, last_nguestbookame, email from emaillist order by no desc;
+select no, first_name, last_name, email from emaillist order by no desc;
 
 
 -- delete
-delete from emaillist where no = 9;
+delete from emaillist where no = 14;
+delete from emaillist where no = 12;

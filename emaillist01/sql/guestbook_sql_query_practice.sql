@@ -6,7 +6,8 @@ insert into guestbook values(null, '관리자', '1234', '공지사항입니다',
 -- select
 select no, name, date_format(reg_date, '%Y-%m-%d') as date, contents from guestbook order by reg_date desc;
 
--- delete
+-- deleteemaillist
 delete from guestbook where no = 1 and password = '1234';
+
 
 -- drop table guestbook;
