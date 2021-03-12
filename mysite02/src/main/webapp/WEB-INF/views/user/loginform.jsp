@@ -21,7 +21,7 @@
 						<%
 							if("fail".equals(request.getAttribute("authResult"))) {
 						%>
-							로그인이 실패 했습니다.
+							로그인에 실패 했습니다.
 						<%								
 							}
 						%>
