@@ -35,7 +35,7 @@ public class MainServlet extends HttpServlet {
 		visitCount++;
 		Cookie cookie = new Cookie("visitCount", String.valueOf(visitCount));
 		cookie.setPath(request.getContextPath());
-		cookie.setMaxAge(24*60*60); // 1day
+		cookie.setMaxAge(24*60*60); // 1-day
 		
 		response.addCookie(cookie);
 		

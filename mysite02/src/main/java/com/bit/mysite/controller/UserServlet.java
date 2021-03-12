@@ -22,11 +22,17 @@ public class UserServlet extends HttpServlet {
 		String action = request.getParameter("a");
 		
 		if( "joinform".equals(action) ) {
+			
 			WebUtil.forward("/WEB-INF/views/user/joinform.jsp", request, response);
-		} else if( "joinsuccess".equals(action) ) { 
+			
+		} else if( "joinsuccess".equals(action) ) {
+			
 			WebUtil.forward("/WEB-INF/views/user/joinsuccess.jsp", request, response);
-		} else if( "loginform".equals(action) ) { 
+			
+		} else if( "loginform".equals(action) ) {
+			
 			WebUtil.forward("/WEB-INF/views/user/loginform.jsp", request, response);
+			
 		} else if( "login".equals(action) ) { 
 			
 			String email = request.getParameter("email");
@@ -63,7 +69,34 @@ public class UserServlet extends HttpServlet {
 			WebUtil.redirect(request.getContextPath(), request, response);
 			
 		
+		} else if( "updateform".equals(action) ) {
+			
+			// Access Control(접근 제어)
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			Long no = authUser.getNo();
+			UserVo userVo = new UserDao().findByNo(no);
+			
+			request.setAttribute("userVo", userVo);
+			WebUtil.forward("/WEB-INF/views/user/updateform.jsp", request, response);
+			
+			
+			
+			
 		} else if( "join".equals(action) ) {
+			
 			String name = request.getParameter("name");
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
@@ -76,7 +109,9 @@ public class UserServlet extends HttpServlet {
 			WebUtil.redirect(request.getContextPath() + "/user?a=joinsuccess", request, response);
 			
 		} else {
+			
 			WebUtil.redirect(request.getContextPath(), request, response);
+			
 		}
 		
 		
