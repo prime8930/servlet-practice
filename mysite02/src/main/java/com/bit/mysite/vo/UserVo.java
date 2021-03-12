@@ -10,22 +10,22 @@ public class UserVo {
 	private String joinDate;
 	
 	public UserVo(String name, String email, String password, String gender) {
-		this.name = name;
-		this.email = email;
+		this(name, email, gender);
 		this.password = password;
-		this.gender = gender;
 	}
-
 
 	public UserVo(Long no, String name) {
 		this.no = no;
 		this.name = name;
 	}
 	
+	public UserVo(String name, String email, String gender) {
+		this.name = name;
+		this.email = email;
+		this.gender = gender;
+	}
 	
-
 	public UserVo(String email, String password) {
-		super();
 		this.email = email;
 		this.password = password;
 	}
