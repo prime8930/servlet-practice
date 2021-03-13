@@ -16,8 +16,6 @@ public class UserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		request.setCharacterEncoding("utf-8");
 		
 		String action = request.getParameter("a");
 		
@@ -92,8 +90,32 @@ public class UserServlet extends HttpServlet {
 			request.setAttribute("userVo", userVo);
 			WebUtil.forward("/WEB-INF/views/user/updateform.jsp", request, response);
 			
+		} else if("update".equals(action)) {
+			
+			String name = request.getParameter("name");
+			String password = request.getParameter("password");
+			String gender = request.getParameter("gender");
 			
 			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			Long no = authUser.getNo();
+			new UserDao().update(no, name, password, gender);
+			
+			authUser.setName(name);
+			WebUtil.redirect(request.getContextPath(), request, response);
 			
 		} else if( "join".equals(action) ) {
 			
@@ -114,11 +136,9 @@ public class UserServlet extends HttpServlet {
 			
 		}
 		
-		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		//
-		
 		doGet(request, response);
 	}
 

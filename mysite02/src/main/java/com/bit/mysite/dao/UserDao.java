@@ -13,6 +13,57 @@ public class UserDao {
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	
+	public UserVo findByNo(Long no) {
+		UserVo userVo = null;
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "select name, email, gender from user where no = ?;";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setLong(1, no);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				String name = rs.getString(1);
+				String email = rs.getString(2);
+				String gender = rs.getString(3);
+				
+				userVo = new UserVo(name, email, gender);
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return userVo;
+	}
+	
+	
 	public UserVo findByMailAndPassword(UserVo vo) {
 		UserVo userVo = null;
 		
@@ -101,6 +152,46 @@ public class UserDao {
 		
 		return false;
 	}
+	
+	public boolean update(Long no, String name, String password, String gender) {
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "update user set name = ?, password = ?, gender = ? where no = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, name);
+			pstmt.setString(2, password);
+			pstmt.setString(3, gender);
+			pstmt.setLong(4, no);
+			
+			int count = pstmt.executeUpdate();
+			
+			if(count > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return false;
+		
+	}
 
 	
 	private Connection getConnection() throws SQLException {
@@ -118,53 +209,5 @@ public class UserDao {
 		return conn;
 	}
 
-	public UserVo findByNo(Long no) {
-		UserVo userVo = null;
-		
-		try {
-			conn = getConnection();
-			
-			String sql = "select name, email, gender from user where no = ?;";
-			
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setLong(1, no);
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				String name = rs.getString(1);
-				String email = rs.getString(2);
-				String gender = rs.getString(3);
-				
-				userVo = new UserVo(name, email, gender);
-			}
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-			
-		} finally {
-			
-			try {
-				
-				if(rs != null) {
-					rs.close();
-				}
-				
-				if(pstmt != null) {
-					pstmt.close();
-				}
-				
-				if(conn != null) {
-					conn.close();
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return userVo;
-	}
+	
 }

@@ -9,6 +9,9 @@ public class UserVo {
 	private String gender;
 	private String joinDate;
 	
+	public UserVo() {
+	}
+	
 	public UserVo(String name, String email, String password, String gender) {
 		this(name, email, gender);
 		this.password = password;
