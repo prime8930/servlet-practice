@@ -66,7 +66,6 @@
 				</div>					
 				<!-- pager 추가 -->
 				
-				
 				<div class="bottom">
 					<c:if test="${!empty authUser }">
 						<a href="${pageContext.request.contextPath }/board?a=writeform" id="new-book">글쓰기</a>
