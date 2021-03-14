@@ -39,7 +39,15 @@
 								<td>${vo.author }</td>
 								<td>${vo.vCount }</td>
 								<td>${vo.wDate }</td>
-								<td><a href="" class="del">삭제</a></td>
+								<c:choose>
+									<c:when test="${authUser.no eq vo.userNo }">
+										<td><a href="${pageContext.request.contextPath }/board?a=delete&no=${vo.no }" class="del">삭제</a></td>
+									</c:when>
+									
+									<c:otherwise>
+										<td></td>
+									</c:otherwise>
+								</c:choose>
 							</tr>
 					</c:forEach>
 				</table>

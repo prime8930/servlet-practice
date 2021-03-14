@@ -41,7 +41,6 @@
 					<a href="${pageContext.request.contextPath }/board">글목록</a>
 					<c:if test="${authUser.no eq boardVo.userNo }">
 						<a href="${pageContext.request.contextPath }/board?a=modifyform&no=${boardVo.no }">글수정</a>
-						<a href="${pageContext.request.contextPath }/board?a=delete&no=${boardVo.no }">삭제</a>
 					</c:if>
 				</div>
 			</div>
