@@ -43,13 +43,123 @@ public class BoardServlet extends HttpServlet {
 			
 		} else if("write".equals(action)) {
 			
+			String title = request.getParameter("title");
+			String contents = request.getParameter("contents");
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			Long userNo = authUser.getNo();
+			
+			if( !(title.equals("") || contents.equals(""))) {
+				
+				BoardVo vo = new BoardVo();
+				
+				vo.setTitle(title);
+				vo.setContents(contents);
+				
+				new BoardDao().insert(vo, userNo);
+				
+			}
+			
+			WebUtil.redirect(request.getContextPath() +"/board", request, response);
+			
 		} else if("view".equals(action)) {
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
 			String no = request.getParameter("no");
 			
-			BoardVo boardVo = new BoardDao().findNameByNo(Long.parseLong(no));
+			BoardVo boardVo = new BoardDao().findByNo(Long.parseLong(no));
 			
 			request.setAttribute("boardVo", boardVo);
+			session.setAttribute("authUser", authUser);
 			WebUtil.forward("/WEB-INF/views/board/view.jsp", request, response);
+			
+		} else if("modifyform".equals(action)) {
+			
+			String no = request.getParameter("no");
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			
+			BoardVo boardVo = new BoardDao().findByNo(Long.parseLong(no));
+			
+			request.setAttribute("boardVo", boardVo);
+			
+			WebUtil.forward("/WEB-INF/views/board/modify.jsp", request, response);
+			
+		} else if("modify".equals(action)){
+			
+			String userNo = request.getParameter("userNo");
+			String title = request.getParameter("title");
+			String contents = request.getParameter("contents");
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			Long authNo = authUser.getNo();
+			
+			if( !(title.equals("") || contents.equals("") || authNo != Long.parseLong(userNo))) {
+				
+				BoardVo vo = new BoardVo();
+				
+				vo.setTitle(title);
+				vo.setContents(contents);
+				vo.setUserNo(Long.parseLong(userNo));
+				
+				new BoardDao().update(vo);
+				
+			}
+			
+			WebUtil.redirect(request.getContextPath() +"/board", request, response);
+			
 		} else {
 			List<BoardVo> list = new BoardDao().findAll();
 			

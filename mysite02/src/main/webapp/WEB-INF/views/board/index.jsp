@@ -33,22 +33,14 @@
 					</tr>
 					<c:set var="count" value="${fn:length(list) }" />
 					<c:forEach items="${list }" var="vo" varStatus="status">
-						<c:choose>
-							<c:when test="${empty list }">
-								게시판 글이 존재하지 않습니다.
-							</c:when>
-							<c:otherwise>
-									
-								<tr>
-									<td>${count-status.index}</td>
-									<td><a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="text-align:left; padding-left:${(vo.depth-1) * 20 }">${vo.title }</a></td>
-									<td>${vo.author }</td>
-									<td>${vo.vCount }</td>
-									<td>${vo.wDate }</td>
-									<td><a href="" class="del">삭제</a></td>
-								</tr>
-							</c:otherwise>
-						</c:choose>
+							<tr>
+								<td>${count-status.index}</td>
+								<td><a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="text-align:left; padding-left:${(vo.depth-1) * 20 }">${vo.title }</a></td>
+								<td>${vo.author }</td>
+								<td>${vo.vCount }</td>
+								<td>${vo.wDate }</td>
+								<td><a href="" class="del">삭제</a></td>
+							</tr>
 					</c:forEach>
 				</table>
 						

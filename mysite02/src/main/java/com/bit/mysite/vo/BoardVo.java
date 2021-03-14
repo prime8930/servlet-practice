@@ -13,15 +13,14 @@ public class BoardVo {
 	private String author;
 	private Date wDate;
 	private int vCount;
+	private Long userNo;
 	
-	public BoardVo() {
-		
+	public BoardVo() {	
 	}
 	
 	
 	public BoardVo(Long no, String title, String contents, int groupNo, int orderNo, int depth, String author,
-			Date wDate, int vCount) {
-		super();
+			Date wDate, int vCount, Long userNo) {
 		this.no = no;
 		this.title = title;
 		this.contents = contents;
@@ -31,6 +30,7 @@ public class BoardVo {
 		this.author = author;
 		this.wDate = wDate;
 		this.vCount = vCount;
+		this.userNo = userNo;
 	}
 
 	public Long getNo() {
@@ -105,12 +105,25 @@ public class BoardVo {
 		this.vCount = vCount;
 	}
 
+	public Long getUserNo() {
+		return userNo;
+	}
+
+
+	public void setUserNo(Long userNo) {
+		this.userNo = userNo;
+	}
+
+
 	@Override
 	public String toString() {
 		return "BoardVo [no=" + no + ", title=" + title + ", contents=" + contents + ", groupNo=" + groupNo
 				+ ", orderNo=" + orderNo + ", depth=" + depth + ", author=" + author + ", wDate=" + wDate + ", vCount="
-				+ vCount + "]";
+				+ vCount + ", userNo=" + userNo + "]";
 	}
+
+
+	
 
 	
 

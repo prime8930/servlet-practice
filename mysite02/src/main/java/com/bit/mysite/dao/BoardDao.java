@@ -17,13 +17,60 @@ public class BoardDao {
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	
-	public BoardVo findNameByNo(Long no) {
+	public boolean insert(BoardVo vo, Long userNo) {
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "insert into board(title, contents, user_no) values(?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, vo.getTitle());
+			pstmt.setString(2, vo.getContents());
+			pstmt.setLong(3, userNo);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				int i = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if( i > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
+	public BoardVo findByNo(Long no) {
 		BoardVo boardVo = null;
 		
 		try {
 			conn = getConnection();
 			
-			String sql = "select title, contents from board where no = ?;";
+			String sql = "select b.no, b.title, b.contents, u.name, date_format(b.w_date, '%Y-%m-%d'), b.user_no"
+					+ " from board b, user u"
+					+ " where u.no = b.user_no and b.no = ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
@@ -32,13 +79,21 @@ public class BoardDao {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				String title = rs.getString(1);
-				String contents = rs.getString(2);
+				Long bno = rs.getLong(1);
+				String title = rs.getString(2);
+				String contents = rs.getString(3);
+				String author = rs.getString(4);
+				Date wDate = rs.getDate(5);
+				Long userNo = rs.getLong(6);
 				
 				boardVo = new BoardVo();
 				
+				boardVo.setNo(bno);
 				boardVo.setTitle(title);
 				boardVo.setContents(contents);
+				boardVo.setAuthor(author);
+				boardVo.setwDate(wDate);
+				boardVo.setUserNo(userNo);
 			}
 			
 		} catch (SQLException e) {
@@ -75,7 +130,7 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count"
+			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no"
 					+ " from board b, user u"
 					+ " where b.user_no = u.no"
 					+ " order by group_no desc, order_no asc";
@@ -94,8 +149,9 @@ public class BoardDao {
 				String author = rs.getString(7);
 				Date wDate = rs.getDate(8);
 				int vCount = rs.getInt(9);
+				Long userNo = rs.getLong(10);
 				
-				BoardVo vo = new BoardVo(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount);
+				BoardVo vo = new BoardVo(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount, userNo);
 				
 				list.add(vo);
 			}
@@ -125,6 +181,52 @@ public class BoardDao {
 		
 	}
 	
+	public boolean update(BoardVo vo) {
+		try {
+			conn = getConnection();
+			
+			String sql = "update board set title = ?, contents = ? where user_no = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, vo.getTitle());
+			pstmt.setString(2, vo.getContents());
+			pstmt.setLong(3, vo.getUserNo());
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				int i = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if( i > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
+	
+	
 	private Connection getConnection() throws SQLException {
 		
 		try {
@@ -139,5 +241,9 @@ public class BoardDao {
 		
 		return conn;
 	}
+
+	
+
+	
 	
 }
