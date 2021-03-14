@@ -17,7 +17,7 @@
 		<c:import url="/WEB-INF/views/includes/header.jsp" />
 		<div id="content">
 			<div id="board">
-				<form class="board-form" method="post" action="${pageContext.request.contextPath }/board?userNo=${boardVo.userNo }">
+				<form class="board-form" method="post" action="${pageContext.request.contextPath }/board?userNo=${boardVo.userNo }&no=${boardVo.no }">
 					<input type="hidden" name="a" value="modify">
 					<table class="tbl-ex">
 						<tr>

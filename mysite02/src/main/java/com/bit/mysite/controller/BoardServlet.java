@@ -111,6 +111,7 @@ public class BoardServlet extends HttpServlet {
 			
 		} else if("modify".equals(action)){
 			
+			String no = request.getParameter("no");
 			String userNo = request.getParameter("userNo");
 			String title = request.getParameter("title");
 			String contents = request.getParameter("contents");
@@ -135,6 +136,7 @@ public class BoardServlet extends HttpServlet {
 				
 				BoardVo vo = new BoardVo();
 				
+				vo.setNo(Long.parseLong(no));
 				vo.setTitle(title);
 				vo.setContents(contents);
 				vo.setUserNo(Long.parseLong(userNo));
@@ -145,6 +147,26 @@ public class BoardServlet extends HttpServlet {
 			
 			WebUtil.redirect(request.getContextPath() +"/board", request, response);
 			
+		} else if("delete".equals(action)) {
+			String no = request.getParameter("no");
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			new BoardDao().delete(Long.parseLong(no));
+			
+			WebUtil.redirect(request.getContextPath() +"/board", request, response);
 		} else {
 			List<BoardVo> list = new BoardDao().findAll();
 			

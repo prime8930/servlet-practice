@@ -185,13 +185,15 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "update board set title = ?, contents = ? where user_no = ?";
+			String sql = "update board set title = ?, contents = ? where no = ? and user_no = ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setString(1, vo.getTitle());
 			pstmt.setString(2, vo.getContents());
-			pstmt.setLong(3, vo.getUserNo());
+			pstmt.setLong(3, vo.getNo());
+			pstmt.setLong(4, vo.getUserNo());
+			
 			
 		} catch (SQLException e) {
 			
@@ -225,6 +227,48 @@ public class BoardDao {
 		return false;
 	}
 	
+	public boolean delete(Long no) {
+		try {
+			conn = getConnection();
+			
+			String sql = "delete from board where no = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setLong(1, no);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				int i = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if( i > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+		
+	}
 	
 	
 	private Connection getConnection() throws SQLException {
@@ -241,6 +285,8 @@ public class BoardDao {
 		
 		return conn;
 	}
+
+	
 
 	
 
