@@ -77,26 +77,11 @@ public class BoardServlet extends HttpServlet {
 			
 		} else if("view".equals(action)) {
 			
-			HttpSession session = request.getSession();
-			
-			if(session == null) {
-				WebUtil.redirect(request.getContextPath(), request, response);
-				return;
-			}
-			
-			UserVo authUser = (UserVo) session.getAttribute("authUser");
-			
-			if(authUser == null) {
-				WebUtil.redirect(request.getContextPath(), request, response);
-				return;
-			}
-			
 			String no = request.getParameter("no");
 			
 			BoardVo boardVo = new BoardDao().findByNo(Long.parseLong(no));
 			
 			request.setAttribute("boardVo", boardVo);
-			session.setAttribute("authUser", authUser);
 			WebUtil.forward("/WEB-INF/views/board/view.jsp", request, response);
 			
 		} else if("modifyform".equals(action)) {

@@ -40,7 +40,9 @@
 				<div class="bottom">
 					<c:if test="${!empty authUser }">
 						<a href="${pageContext.request.contextPath }/board">글목록</a>
-						<a href="${pageContext.request.contextPath }/board?a=modifyform&no=${boardVo.no }">글수정</a>
+						<c:if test="${authUser.no eq boardVo.userNo }">
+							<a href="${pageContext.request.contextPath }/board?a=modifyform&no=${boardVo.no }">글수정</a>
+						</c:if>
 					</c:if>
 				</div>
 			</div>
