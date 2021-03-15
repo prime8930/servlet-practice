@@ -81,6 +81,8 @@ public class BoardServlet extends HttpServlet {
 			
 			BoardVo boardVo = new BoardDao().findByNo(Long.parseLong(no));
 			
+			new BoardDao().upCount(Long.parseLong(no));
+			
 			request.setAttribute("boardVo", boardVo);
 			WebUtil.forward("/WEB-INF/views/board/view.jsp", request, response);
 			

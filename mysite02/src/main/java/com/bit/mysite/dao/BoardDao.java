@@ -270,6 +270,49 @@ public class BoardDao {
 		
 	}
 	
+	public boolean upCount(Long no) {
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "update board set v_count = v_count + 1 where no = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setLong(1, no);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				int i = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if( i > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
 	
 	private Connection getConnection() throws SQLException {
 		
@@ -285,6 +328,8 @@ public class BoardDao {
 		
 		return conn;
 	}
+
+	
 
 	
 
