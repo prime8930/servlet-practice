@@ -95,7 +95,7 @@ public class BoardServlet extends HttpServlet {
 			
 		} else if("reply".equals(action)) {
 			
-			String groupNo = request.getParameter("groupNo");
+			String no = request.getParameter("no");
 			String title = request.getParameter("title");
 			String contents = request.getParameter("contents");
 			
@@ -119,7 +119,7 @@ public class BoardServlet extends HttpServlet {
 				
 				BoardVo vo = new BoardVo();
 				
-				vo.setGroupNo(Integer.parseInt(groupNo));
+				vo.setNo(Long.parseLong(no));
 				vo.setTitle(title);
 				vo.setContents(contents);
 				

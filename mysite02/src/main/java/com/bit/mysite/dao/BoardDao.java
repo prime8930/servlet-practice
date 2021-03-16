@@ -33,7 +33,8 @@ public class BoardDao {
 			int i = pstmt.executeUpdate();
 			
 			if( i > 0 ) {
-				String groupSql = "update board set group_no = (select group_no from (select (MAX(group_no) + 1) as group_no from board) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
+				String groupSql = "update board set group_no = (select group_no from (select (MAX(group_no) + 1) as group_no from board) as board_tt) "
+						+ "where no = (select no from (select MAX(no) as no from board) as board_t)";
 				pstmt = conn.prepareStatement(groupSql);
 			}
 			
@@ -74,32 +75,57 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "insert into board(title, contents, user_no, group_no) values(?, ?, ?, ?)";
+			String sql = "insert into board(title, contents, user_no) values(?, ?, ?)";
 			
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setString(1, vo.getTitle());
 			pstmt.setString(2, vo.getContents());
 			pstmt.setLong(3, userNo);
-			pstmt.setInt(4, vo.getGroupNo());
 			
 			int i = pstmt.executeUpdate();
 			
-			if(i > 0) {
-				String orderSql = "update board set order_no = (select order_no from (select (MAX(order_no) + 1) as order_no from board where group_no =?) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
-				pstmt = conn.prepareStatement(orderSql);
-				pstmt.setInt(1, vo.getGroupNo());
+			if( i > 0) {
+				String selectSql = "select group_no, order_no, depth from board where no = ?";
+				pstmt = conn.prepareStatement(selectSql);
+				pstmt.setLong(1, vo.getNo());
 			}
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			int groupNo = rs.getInt(1);
+			int orderNo = rs.getInt(2);
+			int depth = rs.getInt(3);
+			
+			String groupSql = "update board set group_no = ? where no = (select no from (select MAX(no) as no from board) as board_t)";
+			pstmt = conn.prepareStatement(groupSql);
+			pstmt.setInt(1, groupNo);
 			
 			int j = pstmt.executeUpdate();
 			
 			if(j > 0) {
-				String orderSql = "update board set depth = (select depth from (select (MAX(depth) + 1) as depth from board where group_no = ?) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
+				String orderSql = "update board set order_no = ? where no = (select no from (select MAX(no) as no from board) as board_t)";
 				pstmt = conn.prepareStatement(orderSql);
-				pstmt.setInt(1, vo.getGroupNo());
+				pstmt.setInt(1, orderNo + 1);
 			}
 			
+			int k = pstmt.executeUpdate();
 			
+			if(k > 0) {
+				String depthSql = "update board set depth = ? where no = (select no from (select MAX(no) as no from board) as board_t)";
+				pstmt = conn.prepareStatement(depthSql);
+				pstmt.setInt(1, depth + 1);
+			}
+			
+			int l = pstmt.executeUpdate();
+			
+			if( l > 0) {
+				String otherOrderSql = "update board set order_no = order_no + 1 where order_no >= ? and group_no = ? and no not in(select no from (select MAX(no) as no from board) as board_n)";
+				pstmt = conn.prepareStatement(otherOrderSql);
+				pstmt.setInt(1, orderNo + 1);
+				pstmt.setInt(2, groupNo);
+			}
 			
 		} catch (SQLException e) {
 			
@@ -109,7 +135,7 @@ public class BoardDao {
 			
 			try {
 				
-				int z = pstmt.executeUpdate();
+				int m = pstmt.executeUpdate();
 				
 				if(rs != null) {
 					rs.close();
@@ -123,9 +149,10 @@ public class BoardDao {
 					conn.close();
 				}
 				
-				if(z > 0 ) {
+				if( m > 0) {
 					return true;
 				}
+				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();

@@ -39,9 +39,9 @@
 				</table>
 				
 				<div class="bottom">
-					<a href="${pageContext.request.contextPath }/board?a=replyform&groupNo=${boardVo.groupNo }" style="float:left;">답글</a>
 					<a href="${pageContext.request.contextPath }/board">글목록</a>
 					<c:if test="${authUser.no eq boardVo.userNo }">
+						<a href="${pageContext.request.contextPath }/board?a=replyform&no=${boardVo.no }" style="float:left;">답글</a>
 						<a href="${pageContext.request.contextPath }/board?a=modifyform&no=${boardVo.no }">글수정</a>
 					</c:if>
 				</div>
