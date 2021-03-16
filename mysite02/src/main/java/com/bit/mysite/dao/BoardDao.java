@@ -30,6 +30,13 @@ public class BoardDao {
 			pstmt.setString(2, vo.getContents());
 			pstmt.setLong(3, userNo);
 			
+			int i = pstmt.executeUpdate();
+			
+			if( i > 0 ) {
+				String groupSql = "update board set group_no = (select group_no from (select (MAX(group_no) + 1) as group_no from board) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
+				pstmt = conn.prepareStatement(groupSql);
+			}
+			
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
@@ -37,7 +44,8 @@ public class BoardDao {
 		} finally {
 			
 			try {
-				int i = pstmt.executeUpdate();
+				
+				int j = pstmt.executeUpdate();
 				
 				if(rs != null) {
 					rs.close();
@@ -51,7 +59,7 @@ public class BoardDao {
 					conn.close();
 				}
 				
-				if( i > 0 ) {
+				if(j > 0 ) {
 					return true;
 				}
 				
