@@ -75,6 +75,60 @@ public class BoardServlet extends HttpServlet {
 			
 			WebUtil.redirect(request.getContextPath() +"/board", request, response);
 			
+		} else if("replyform".equals(action)) {
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			WebUtil.forward("/WEB-INF/views/board/reply.jsp", request, response);
+			
+		} else if("reply".equals(action)) {
+			
+			String groupNo = request.getParameter("groupNo");
+			String title = request.getParameter("title");
+			String contents = request.getParameter("contents");
+			
+			HttpSession session = request.getSession();
+			
+			if(session == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			UserVo authUser = (UserVo) session.getAttribute("authUser");
+			
+			if(authUser == null) {
+				WebUtil.redirect(request.getContextPath(), request, response);
+				return;
+			}
+			
+			Long userNo = authUser.getNo();
+			
+			if( !(title.equals("") || contents.equals(""))) {
+				
+				BoardVo vo = new BoardVo();
+				
+				vo.setGroupNo(Integer.parseInt(groupNo));
+				vo.setTitle(title);
+				vo.setContents(contents);
+				
+				new BoardDao().replyInsert(vo, userNo);
+				
+			}
+			
+			WebUtil.redirect(request.getContextPath() +"/board", request, response);
+			
 		} else if("view".equals(action)) {
 			
 			String no = request.getParameter("no");

@@ -35,7 +35,14 @@
 					<c:forEach items="${list }" var="vo" varStatus="status">
 							<tr>
 								<td>${count-status.index}</td>
-								<td><a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="text-align:left; padding-left:${(vo.depth-1) * 20 }">${vo.title }</a></td>
+								<td>
+									<a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="text-align:left; padding-left:${(vo.depth) * 20 }">
+										<c:if test="${ (vo.depth * 20) > 0 }">
+											<img src="${pageContext.request.contextPath }/assets/images/reply.png" style="width:10px; height:10px;"/>
+										</c:if>
+										${vo.title }
+									</a>
+								</td>
 								<td>${vo.author }</td>
 								<td>${vo.vCount }</td>
 								<td>${vo.wDate }</td>

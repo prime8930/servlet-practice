@@ -70,13 +70,77 @@ public class BoardDao {
 		return false;
 	}
 	
+	public boolean replyInsert(BoardVo vo, Long userNo) {
+		try {
+			conn = getConnection();
+			
+			String sql = "insert into board(title, contents, user_no, group_no) values(?, ?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, vo.getTitle());
+			pstmt.setString(2, vo.getContents());
+			pstmt.setLong(3, userNo);
+			pstmt.setInt(4, vo.getGroupNo());
+			
+			int i = pstmt.executeUpdate();
+			
+			if(i > 0) {
+				String orderSql = "update board set order_no = (select order_no from (select (MAX(order_no) + 1) as order_no from board where group_no =?) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
+				pstmt = conn.prepareStatement(orderSql);
+				pstmt.setInt(1, vo.getGroupNo());
+			}
+			
+			int j = pstmt.executeUpdate();
+			
+			if(j > 0) {
+				String orderSql = "update board set depth = (select depth from (select (MAX(depth) + 1) as depth from board where group_no = ?) as board_tt) where no = (select no from (select MAX(no) as no from board) as board_t)";
+				pstmt = conn.prepareStatement(orderSql);
+				pstmt.setInt(1, vo.getGroupNo());
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				
+				int z = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if(z > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
 	public BoardVo findByNo(Long no) {
 		BoardVo boardVo = null;
 		
 		try {
 			conn = getConnection();
 			
-			String sql = "select b.no, b.title, b.contents, u.name, date_format(b.w_date, '%Y-%m-%d'), b.user_no"
+			String sql = "select b.no, b.title, b.contents, u.name, date_format(b.w_date, '%Y-%m-%d'), b.user_no, b.group_no"
 					+ " from board b, user u"
 					+ " where u.no = b.user_no and b.no = ?";
 			
@@ -93,6 +157,7 @@ public class BoardDao {
 				String author = rs.getString(4);
 				Date wDate = rs.getDate(5);
 				Long userNo = rs.getLong(6);
+				int groupNo = rs.getInt(7);
 				
 				boardVo = new BoardVo();
 				
@@ -102,6 +167,7 @@ public class BoardDao {
 				boardVo.setAuthor(author);
 				boardVo.setwDate(wDate);
 				boardVo.setUserNo(userNo);
+				boardVo.setGroupNo(groupNo);
 			}
 			
 		} catch (SQLException e) {
@@ -337,12 +403,5 @@ public class BoardDao {
 		return conn;
 	}
 
-	
-
-	
-
-	
-
-	
 	
 }
