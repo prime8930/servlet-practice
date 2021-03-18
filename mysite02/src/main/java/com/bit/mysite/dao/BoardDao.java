@@ -285,6 +285,66 @@ public class BoardDao {
 		
 	}
 	
+	public List<BoardVo> findKwd(int cPageNum, String kwd) {
+		List<BoardVo> list = new ArrayList<>();
+
+		try {
+			conn = getConnection();
+			
+			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no"
+					+ " from (select * from board where title like ? order by group_no desc, order_no asc) as b, user u"
+					+ " where b.user_no = u.no"
+					+ " order by group_no desc limit ?, ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, "%"+kwd+"%");
+			pstmt.setInt(2, (cPageNum-1) * 10);
+			pstmt.setInt(3, 10);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				Long no = rs.getLong(1);
+				String title = rs.getString(2);
+				String contents = rs.getString(3);
+				int groupNo = rs.getInt(4);
+				int orderNo = rs.getInt(5);
+				int depth = rs.getInt(6);
+				String author = rs.getString(7);
+				Date wDate = rs.getDate(8);
+				int vCount = rs.getInt(9);
+				Long userNo = rs.getLong(10);
+				
+				BoardVo vo = new BoardVo(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount, userNo);
+				
+				list.add(vo);
+			}
+			
+		} catch(SQLException e) {
+			System.out.println("[error] " + e.getMessage());
+		} finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close(); 
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
+	
 	public boolean update(BoardVo vo) {
 		try {
 			conn = getConnection();
