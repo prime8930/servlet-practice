@@ -14,13 +14,10 @@
 		<c:import url="/WEB-INF/views/includes/header.jsp" />
 		<div id="content">
 			<div id="board">
-				<form id="search_form" action="" method="post">
-					<input type="text" id="kwd" name="kwd" value="">
+				<form id="search_form" action="${pageContext.request.contextPath }/board" method="post">
+					<input type="text" id="kwd" name="kwd">
 					<input type="submit" value="찾기">
 				</form>
-				<!-- 팝업창 띄우기
-				<a href="" onclick="window.open(this.href, '_blank', 'width=400px,height=200px,toolbars=no,scrollbars=no'); return false;">완전 간단하게 팝업 띄우기!!</a> 
-				-->
 						
 				<table class="tbl-ex">
 					<tr>
@@ -58,8 +55,7 @@
 							</tr>
 					</c:forEach>
 				</table>
-						
-				<!-- pager 추가 -->
+
 				<div class="pager">
 					<c:set var="pageVo" value="${pageVo }"/>
 					<c:if test="${pageVo.count > 0}">
@@ -88,8 +84,7 @@
 							</c:if>
 						</ul>
 					</c:if>
-				</div>					
-				<!-- pager 추가 -->
+				</div>
 				
 				<div class="bottom">
 					<c:if test="${!empty authUser }">
