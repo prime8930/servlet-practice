@@ -1,7 +1,7 @@
 package com.bit.mysite.controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import com.bit.mysite.dao.BoardDao;
 import com.bit.mysite.vo.BoardVo;
+import com.bit.mysite.vo.PagingVo;
 import com.bit.mysite.vo.UserVo;
 import com.bit.web.mvc.WebUtil;
 
@@ -224,9 +225,24 @@ public class BoardServlet extends HttpServlet {
 			
 			WebUtil.redirect(request.getContextPath() +"/board", request, response);
 		} else {
-			List<BoardVo> list = new BoardDao().findAll();
+			
+			String pageNum = request.getParameter("pageNum");
+			
+            if (pageNum == null) {
+                pageNum = "1";
+            }
+            
+            int cPageNum = Integer.parseInt(pageNum);
+            
+            PagingVo pageVo = new PagingVo(cPageNum);
+            
+            int endPageNum = (int) Math.ceil(  (double) pageVo.getCount() / pageVo.getBoardSize());
+            
+			List<BoardVo> list = new BoardDao().findAll(cPageNum);
 			
 			request.setAttribute("list", list);
+			request.setAttribute("pageVo", pageVo);
+			request.setAttribute("endPageNum", endPageNum);
 			
 			WebUtil.forward("/WEB-INF/views/board/index.jsp", request, response);
 		}

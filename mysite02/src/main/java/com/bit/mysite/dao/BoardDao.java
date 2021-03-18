@@ -225,18 +225,21 @@ public class BoardDao {
 		return boardVo;
 	}
 	
-	public List<BoardVo> findAll() {
+	public List<BoardVo> findAll(int cPageNum) {
 		List<BoardVo> list = new ArrayList<>();
 		
 		try {
 			conn = getConnection();
 			
 			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no"
-					+ " from board b, user u"
+					+ " from (select * from board limit ?, ?) as b, user u"
 					+ " where b.user_no = u.no"
 					+ " order by group_no desc, order_no asc";
 			
 			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, (cPageNum-1) * 10);
+			pstmt.setInt(2, 10);
 			
 			rs = pstmt.executeQuery();
 			
@@ -414,6 +417,51 @@ public class BoardDao {
 		return false;
 	}
 	
+	public int getCount() {
+		
+		try {
+			conn = getConnection();
+			
+			String sql = "select count(*) from board";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				
+				int cnt = rs.getInt(1);
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				return cnt;
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return -1;
+	}
+	
 	
 	private Connection getConnection() throws SQLException {
 		
@@ -429,6 +477,8 @@ public class BoardDao {
 		
 		return conn;
 	}
+
+	
 
 	
 }

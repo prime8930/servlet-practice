@@ -61,15 +61,33 @@
 						
 				<!-- pager 추가 -->
 				<div class="pager">
-					<ul>
-						<li><a href="">◀</a></li>
-						<li class=selected><a href="/mysite02/board?p=1">1</a></li>
-						<li><a href="/mysite02/board?p=2">2</a></li>
-						<li><a href="/mysite02/board?p=3">3</a></li>
-						<li>4</li>
-						<li>5</li>
-						<li><a href="">▶</a></li>
-					</ul>
+					<c:set var="pageVo" value="${pageVo }"/>
+					<c:if test="${pageVo.count > 0}">
+						
+						<ul>
+							<c:if test="${pageVo.currentPage > pageVo.pageSize}">
+								<li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.prevPageNum}">◀</a></li>
+							</c:if>
+							
+								<c:choose>
+									<c:when test="${pageVo.endNum < endPageNum }">
+										<c:forEach var="i" begin="${pageVo.startNum }" end="${pageVo.endNum}">
+											<li><a href="${pageContext.request.contextPath }/board?pageNum=${i }">${i}</a></li>
+										</c:forEach>
+									</c:when>
+									
+									<c:otherwise>
+										<c:forEach var="i" begin="${pageVo.startNum }" end="${endPageNum}">
+											<li><a href="${pageContext.request.contextPath }/board?pageNum=${i }">${i}</a></li>
+										</c:forEach>
+									</c:otherwise>
+								</c:choose>
+							
+							<c:if test="${pageVo.endNum < endPageNum }">
+								<li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.nextPageNum}">▶</a></li>
+							</c:if>
+						</ul>
+					</c:if>
 				</div>					
 				<!-- pager 추가 -->
 				
