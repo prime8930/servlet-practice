@@ -12,6 +12,10 @@ public class PagingVo {
 	private int count = 0;
 	private int prevPageNum = 0;
 	private int nextPageNum = 0;
+	
+	public PagingVo() {
+		
+	}
 
 	public PagingVo(int pageNum) {
 		setCurrentPage(pageNum);

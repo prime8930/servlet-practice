@@ -227,6 +227,9 @@ public class BoardServlet extends HttpServlet {
 		} else {
 			
 			String pageNum = request.getParameter("pageNum");
+			String kwd = request.getParameter("kwd");
+			
+			System.out.println(kwd);
 			
             if (pageNum == null) {
                 pageNum = "1";
@@ -236,10 +239,21 @@ public class BoardServlet extends HttpServlet {
             
             PagingVo pageVo = new PagingVo(cPageNum);
             
-            int endPageNum = (int) Math.ceil(  (double) pageVo.getCount() / pageVo.getBoardSize());
+            List<BoardVo> list = new ArrayList<>();
             
-			List<BoardVo> list = new BoardDao().findAll(cPageNum);
-			
+            if(kwd == null) {
+            	list = new BoardDao().findAll(cPageNum);
+            } else {
+            	list = new BoardDao().findKwd(cPageNum, kwd);
+            }
+            
+            int endPageNum = (int) Math.ceil(  (double) list.size() / pageVo.getBoardSize());
+            
+            if(cPageNum > endPageNum) {
+            	WebUtil.redirect(request.getContextPath()+"/board", request, response);
+				return;
+            }
+            
 			request.setAttribute("list", list);
 			request.setAttribute("pageVo", pageVo);
 			request.setAttribute("endPageNum", endPageNum);
