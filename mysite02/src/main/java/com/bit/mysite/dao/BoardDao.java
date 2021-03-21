@@ -122,10 +122,18 @@ public class BoardDao {
 			int l = pstmt.executeUpdate();
 			
 			if( l > 0) {
-				String otherOrderSql = "update board set order_no = order_no + 1 where order_no >= ? and group_no = ? and no not in(select no from (select MAX(no) as no from board) as board_n)";
+				String otherOrderSql = "update board set order_no = order_no + 1 where order_no >= ? and group_no = ? and no != (select no from (select MAX(no) as no from board) as board_n)";
 				pstmt = conn.prepareStatement(otherOrderSql);
 				pstmt.setInt(1, orderNo + 1);
 				pstmt.setInt(2, groupNo);
+			}
+			
+			int m = pstmt.executeUpdate();
+			
+			if(m >= 0) {
+				String rDeletesql = "update board set r_delete = 0 where no = ?";
+				pstmt = conn.prepareStatement(rDeletesql);
+				pstmt.setLong(1, vo.getNo());
 			}
 			
 		} catch (SQLException e) {
@@ -135,8 +143,7 @@ public class BoardDao {
 		} finally {
 			
 			try {
-				
-				int m = pstmt.executeUpdate();
+				int n = pstmt.executeUpdate();
 				
 				if(rs != null) {
 					rs.close();
@@ -150,15 +157,15 @@ public class BoardDao {
 					conn.close();
 				}
 				
-				if( m > 0) {
+				if(n > 0) {
 					return true;
 				}
-				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		
 		return false;
 	}
 	
@@ -168,7 +175,7 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "select b.no, b.title, b.contents, u.name, date_format(b.w_date, '%Y-%m-%d'), b.user_no, b.group_no"
+			String sql = "select b.no, b.title, b.contents, u.name, date_format(b.w_date, '%Y-%m-%d'), b.user_no, b.group_no, b.t_delete"
 					+ " from board b, user u"
 					+ " where u.no = b.user_no and b.no = ?";
 			
@@ -186,6 +193,7 @@ public class BoardDao {
 				Date wDate = rs.getDate(5);
 				Long userNo = rs.getLong(6);
 				int groupNo = rs.getInt(7);
+				boolean tDelete = rs.getBoolean(8);
 				
 				boardVo = new BoardVo();
 				
@@ -196,6 +204,7 @@ public class BoardDao {
 				boardVo.setwDate(wDate);
 				boardVo.setUserNo(userNo);
 				boardVo.setGroupNo(groupNo);
+				boardVo.settDelete(tDelete);
 			}
 			
 		} catch (SQLException e) {
@@ -232,10 +241,10 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no"
-					+ " from (select * from board order by group_no desc, order_no asc) as b, user u"
+			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no, b.t_delete, b.r_delete"
+					+ " from board as b, user u"
 					+ " where b.user_no = u.no"
-					+ " order by group_no desc limit ?, ?";
+					+ " order by group_no desc, order_no asc limit ?, ?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
@@ -255,10 +264,13 @@ public class BoardDao {
 				Date wDate = rs.getDate(8);
 				int vCount = rs.getInt(9);
 				Long userNo = rs.getLong(10);
+				boolean tDelete = rs.getBoolean(11);
+				boolean rDelete = rs.getBoolean(12);
 				
-				BoardVo vo = new BoardVo(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount, userNo);
+				BoardVo vo = new BoardVo(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount, userNo, tDelete, rDelete);
 				
 				list.add(vo);
+				
 			}
 			
 		} catch(SQLException e) {
@@ -294,7 +306,7 @@ public class BoardDao {
 			
 			String sql = "select b.no, b.title, b.contents, b.group_no, b.order_no, b.depth, u.name, date_format(b.w_date, '%Y-%m-%d'), b.v_count, b.user_no"
 					+ " from (select * from board where title like ? order by group_no desc, order_no asc) as b, user u"
-					+ " where b.user_no = u.no"
+					+ " where b.user_no = u.no and t_delete = 0"
 					+ " order by group_no desc limit ?, ?";
 			
 			pstmt = conn.prepareStatement(sql);
@@ -398,9 +410,9 @@ public class BoardDao {
 		try {
 			conn = getConnection();
 			
-			String sql = "delete from board where no = ?";
+			String deleteSql = "update board set t_delete = 1 where no = ?";
 			
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(deleteSql);
 			
 			pstmt.setLong(1, no);
 			
@@ -436,6 +448,77 @@ public class BoardDao {
 		return false;
 		
 	}
+
+/*	제거 수정중..
+	public boolean clearReply(Long no) {
+		
+		try {
+			conn = getConnection();
+			
+			String selectSql = "select group_no, order_no, depth from board where order_no > 1 and group_no = (select group_no from board where no = ?)";
+			
+			pstmt = conn.prepareStatement(selectSql);
+			
+			pstmt.setLong(1, no);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			int groupNo = rs.getInt(1);
+			int orderNo = rs.getInt(2);
+			int depth = rs.getInt(3);
+			
+			String rDeleteSql = "update board set r_delete = 1 where order_no between ? and ? and group_no = ? and t_delete = 1";
+			
+			pstmt =conn.prepareStatement(rDeleteSql);
+			
+			pstmt.setInt(1, orderNo-(depth-1));
+			pstmt.setInt(2, orderNo);
+			pstmt.setInt(3, groupNo);
+			
+			int i = pstmt.executeUpdate();
+			
+			if(i > 0) {
+				String clearAllSql = "delete from board where t_delete = 1 and r_delete = 1";
+				
+				pstmt = conn.prepareStatement(clearAllSql);
+				
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			try {
+				
+				int j = pstmt.executeUpdate();
+				
+				if(rs != null) {
+					rs.close();
+				}
+				
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				
+				if(conn != null) {
+					conn.close();
+				}
+				
+				if( j > 0 ) {
+					return true;
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+*/	
 	
 	public boolean upCount(Long no) {
 		

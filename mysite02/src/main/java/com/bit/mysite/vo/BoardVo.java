@@ -14,9 +14,13 @@ public class BoardVo {
 	private Date wDate;
 	private int vCount;
 	private Long userNo;
+	private boolean tDelete;
+	private boolean rDelete;
 	
 	public BoardVo() {	
 	}
+	
+	
 	
 	
 	public BoardVo(Long no, String title, String contents, int groupNo, int orderNo, int depth, String author,
@@ -31,6 +35,16 @@ public class BoardVo {
 		this.wDate = wDate;
 		this.vCount = vCount;
 		this.userNo = userNo;
+	}
+
+
+
+
+	public BoardVo(Long no, String title, String contents, int groupNo, int orderNo, int depth, String author,
+			Date wDate, int vCount, Long userNo, boolean tDelete, boolean rDelete) {
+		this(no, title, contents, groupNo, orderNo, depth, author, wDate, vCount, userNo);
+		this.tDelete = tDelete;
+		this.rDelete = rDelete;
 	}
 
 	public Long getNo() {
@@ -115,12 +129,34 @@ public class BoardVo {
 	}
 
 
+	public boolean istDelete() {
+		return tDelete;
+	}
+
+
+	public void settDelete(boolean tDelete) {
+		this.tDelete = tDelete;
+	}
+
+
+	public boolean isrDelete() {
+		return rDelete;
+	}
+
+
+	public void setrDelete(boolean rDelete) {
+		this.rDelete = rDelete;
+	}
+
+
 	@Override
 	public String toString() {
 		return "BoardVo [no=" + no + ", title=" + title + ", contents=" + contents + ", groupNo=" + groupNo
 				+ ", orderNo=" + orderNo + ", depth=" + depth + ", author=" + author + ", wDate=" + wDate + ", vCount="
-				+ vCount + ", userNo=" + userNo + "]";
+				+ vCount + ", userNo=" + userNo + ", tDelete=" + tDelete + ", rDelete=" + rDelete + "]";
 	}
+
+	
 
 
 	

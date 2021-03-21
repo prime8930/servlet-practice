@@ -33,19 +33,27 @@
 								<td>${(pageVo.count-status.index)-((pageVo.currentPage-1) * pageVo.boardSize)}</td>
 								<td>
 									<span style="display:inline-block; width:200px; text-align:left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-									<a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="padding-left:${vo.depth *20 }px;">
-										<c:if test="${vo.depth gt 0 }">
-												<img src="${pageContext.request.contextPath }/assets/images/reply.png" style="width:10px; height:10px;"/>
-										</c:if>
-										${vo.title }
-									</a>
+										<c:choose>
+											<c:when test="${vo.tDelete eq true }">
+												<span style="padding-left:${vo.depth *20 }px;">삭제된 게시글입니다.</span>
+											</c:when>
+											
+											<c:otherwise>
+												<a href="${pageContext.request.contextPath }/board?a=view&no=${vo.no }" style="padding-left:${vo.depth *20 }px;">
+												<c:if test="${vo.depth gt 0 }">
+														<img src="${pageContext.request.contextPath }/assets/images/reply.png" style="width:10px; height:10px;"/>
+												</c:if>
+												${vo.title }
+												</a>
+											</c:otherwise>
+										</c:choose>
 									</span>
 								</td>
 								<td>${vo.author }</td>
 								<td>${vo.vCount }</td>
 								<td>${vo.wDate }</td>
 								<c:choose>
-									<c:when test="${authUser.no eq vo.userNo }">
+									<c:when test="${authUser.no eq vo.userNo and vo.tDelete eq false}">
 										<td><a href="${pageContext.request.contextPath }/board?a=delete&no=${vo.no }" class="del">삭제</a></td>
 									</c:when>
 									
@@ -59,7 +67,8 @@
 						
 				<!-- pager 추가 -->
 				<div class="pager">
-					<c:if test="${pageVo.count > 0}">
+				<c:choose>
+					<c:when test="${pageVo.count > 0}">
 						<ul>
 							<c:if test="${pageVo.currentPage > pageVo.pageSize}">
 								<li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.prevPageNum}">◀</a></li>
@@ -81,7 +90,11 @@
 								<li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.nextPageNum}">▶</a></li>
 							</c:if>
 						</ul>
-					</c:if>
+					</c:when>
+					<c:otherwise>
+						<ul><li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.currentPage }">${pageVo.currentPage }</a></li></ul>
+					</c:otherwise>
+				</c:choose>
 				</div>					
 				<!-- pager 추가 -->
 				

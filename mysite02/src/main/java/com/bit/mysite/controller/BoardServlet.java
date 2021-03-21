@@ -136,6 +136,11 @@ public class BoardServlet extends HttpServlet {
 			
 			BoardVo boardVo = new BoardDao().findByNo(Long.parseLong(no));
 			
+			if(boardVo.istDelete() == true) {
+				WebUtil.redirect(request.getContextPath()+"/board", request, response);
+				return;
+			}
+			
 			new BoardDao().upCount(Long.parseLong(no));
 			
 			request.setAttribute("boardVo", boardVo);
@@ -222,14 +227,13 @@ public class BoardServlet extends HttpServlet {
 			}
 			
 			new BoardDao().delete(Long.parseLong(no));
+//			new BoardDao().clearReply(Long.parseLong(no));
 			
 			WebUtil.redirect(request.getContextPath() +"/board", request, response);
 		} else {
 			
 			String pageNum = request.getParameter("pageNum");
 			String kwd = request.getParameter("kwd");
-			
-			System.out.println(kwd);
 			
             if (pageNum == null) {
                 pageNum = "1";
@@ -249,7 +253,7 @@ public class BoardServlet extends HttpServlet {
             
             int endPageNum = (int) Math.ceil(  (double) list.size() / pageVo.getBoardSize());
             
-            if(cPageNum > endPageNum) {
+            if(cPageNum > endPageNum && endPageNum > 1) {
             	WebUtil.redirect(request.getContextPath()+"/board", request, response);
 				return;
             }
