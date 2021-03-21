@@ -358,7 +358,7 @@ public class BoardDao {
 		return list;
 	}
 	
-	
+
 	
 	public boolean update(BoardVo vo) {
 		try {

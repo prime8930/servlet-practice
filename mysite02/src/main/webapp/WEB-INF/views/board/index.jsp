@@ -64,8 +64,7 @@
 							</tr>
 					</c:forEach>
 				</table>
-						
-				<!-- pager 추가 -->
+
 				<div class="pager">
 				<c:choose>
 					<c:when test="${pageVo.count > 0}">
@@ -90,6 +89,7 @@
 								<li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.nextPageNum}">▶</a></li>
 							</c:if>
 						</ul>
+
 					</c:when>
 					<c:otherwise>
 						<ul><li><a href="${pageContext.request.contextPath }/board?pageNum=${pageVo.currentPage }">${pageVo.currentPage }</a></li></ul>
@@ -97,7 +97,7 @@
 				</c:choose>
 				</div>					
 				<!-- pager 추가 -->
-				
+
 				<div class="bottom">
 					<c:if test="${!empty authUser }">
 						<a href="${pageContext.request.contextPath }/board?a=writeform" id="new-book">글쓰기</a>

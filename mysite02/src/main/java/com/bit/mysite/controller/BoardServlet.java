@@ -235,29 +235,29 @@ public class BoardServlet extends HttpServlet {
 			String pageNum = request.getParameter("pageNum");
 			String kwd = request.getParameter("kwd");
 			
-            if (pageNum == null) {
-                pageNum = "1";
-            }
-            
-            int cPageNum = Integer.parseInt(pageNum);
-            
-            PagingVo pageVo = new PagingVo(cPageNum);
-            
-            List<BoardVo> list = new ArrayList<>();
-            
-            if(kwd == null) {
-            	list = new BoardDao().findAll(cPageNum);
-            } else {
-            	list = new BoardDao().findKwd(cPageNum, kwd);
-            }
-            
-            int endPageNum = (int) Math.ceil(  (double) list.size() / pageVo.getBoardSize());
-            
-            if(cPageNum > endPageNum && endPageNum > 1) {
-            	WebUtil.redirect(request.getContextPath()+"/board", request, response);
+			if (pageNum == null) {
+				pageNum = "1";
+			}
+
+			int cPageNum = Integer.parseInt(pageNum);
+
+			PagingVo pageVo = new PagingVo(cPageNum);
+
+			List<BoardVo> list = new ArrayList<>();
+
+			if(kwd == null) {
+				list = new BoardDao().findAll(cPageNum);
+			} else {
+				list = new BoardDao().findKwd(cPageNum, kwd);
+			}
+
+			int endPageNum = (int) Math.ceil(  (double) list.size() / pageVo.getBoardSize());
+
+			if(cPageNum > endPageNum) {
+				WebUtil.redirect(request.getContextPath()+"/board", request, response);
 				return;
-            }
-            
+			}
+			
 			request.setAttribute("list", list);
 			request.setAttribute("pageVo", pageVo);
 			request.setAttribute("endPageNum", endPageNum);
