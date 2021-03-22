@@ -251,9 +251,9 @@ public class BoardServlet extends HttpServlet {
 				list = new BoardDao().findKwd(cPageNum, kwd);
 			}
 
-			int endPageNum = (int) Math.ceil(  (double) list.size() / pageVo.getBoardSize());
+			int endPageNum = (int) Math.ceil(  (double) pageVo.getCount() / pageVo.getBoardSize());
 
-			if(cPageNum > endPageNum) {
+			if(cPageNum > endPageNum && endPageNum > 1) {
 				WebUtil.redirect(request.getContextPath()+"/board", request, response);
 				return;
 			}
